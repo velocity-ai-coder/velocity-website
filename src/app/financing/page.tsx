@@ -8,6 +8,7 @@ import Testimonials from "@/components/financing/Testimonials";
 import FeaturedIn from "@/components/financing/FeaturedIn";
 import FAQ from "@/components/financing/FAQ";
 import ComparisonTable from "@/components/financing/ComparisonTable";
+import NBFCSection from "@/components/financing/NBFCSection";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function FinancingPage() {
       <HowItWorks />
       <CustomerSegments />
       <KeyBenefits />
+      <NBFCSection />
       <ComparisonTable />
       <Testimonials />
       <FeaturedIn />
