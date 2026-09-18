@@ -4,25 +4,19 @@ import { useState, useEffect, useCallback, type ReactElement } from "react";
 
 /* ─── icons ──────────────────────────────────────────────────── */
 const CheckIcon = () => (
-  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100">
-    <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-  </span>
+  <svg className="w-5 h-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+  </svg>
 );
 const PartialIcon = () => (
-  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100">
-    <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-    </svg>
-  </span>
+  <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+  </svg>
 );
 const CrossIcon = () => (
-  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
-    <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </span>
+  <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
 );
 
 type Status = "check" | "partial" | "cross";
@@ -39,7 +33,7 @@ const ICON_MAP: Record<Status, ReactElement> = {
 
 const GROUPS: Group[] = [
   {
-    label: "💰 Capital & Pricing",
+    label: "Capital & Pricing",
     rows: [
       {
         feature: "Max funding",
@@ -57,8 +51,8 @@ const GROUPS: Group[] = [
       },
       {
         feature: "Pricing transparency",
-        velocity: { status: "check",   label: "5–8% flat, published" },
-        a:        { status: "partial", label: "Flat fee, less visible" },
+        velocity: { status: "check",   label: "5–8% flat fee, public" },
+        a:        { status: "partial", label: "Less visible" },
         b:        { status: "partial", label: "Product-dependent" },
         c:        { status: "cross",   label: "Not prominent" },
       },
@@ -79,7 +73,7 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    label: "✅ Eligibility",
+    label: "Eligibility",
     rows: [
       {
         feature: "Equity dilution",
@@ -89,7 +83,7 @@ const GROUPS: Group[] = [
         c:        { status: "check",   label: "None" },
       },
       {
-        feature: "Collateral required",
+        feature: "Collateral",
         velocity: { status: "check",   label: "None" },
         a:        { status: "partial", label: "No for RBF" },
         b:        { status: "partial", label: "No for RBF" },
@@ -119,11 +113,11 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    label: "🚀 Ecosystem",
+    label: "Ecosystem",
     rows: [
       {
         feature: "Integrated shipping",
-        velocity: { status: "check",   label: "ShipFast (built-in)" },
+        velocity: { status: "check",   label: "ShipFast built-in" },
         a:        { status: "cross",   label: "Not available" },
         b:        { status: "cross",   label: "Not available" },
         c:        { status: "cross",   label: "Not available" },
@@ -160,141 +154,146 @@ const GROUPS: Group[] = [
   },
 ];
 
-const COMPETITORS: { key: CompKey; name: string; sub: string; score: number }[] = [
-  { key: "a", name: "Competitor A", sub: "Finance platform",  score: 9  },
-  { key: "b", name: "Competitor B", sub: "Capital platform",  score: 8  },
-  { key: "c", name: "Competitor C", sub: "Finance platform",  score: 8  },
+const COMPETITORS = [
+  { key: "a" as CompKey, name: "Competitor A", sub: "Finance platform",  score: 9  },
+  { key: "b" as CompKey, name: "Competitor B", sub: "Capital platform",  score: 8  },
+  { key: "c" as CompKey, name: "Competitor C", sub: "Finance platform",  score: 8  },
 ];
 
 const VELOCITY_SCORE = 15;
 const TOTAL = 15;
-const SLIDE_INTERVAL = 4000;
+const SLIDE_MS = 5000;
 
 export default function ComparisonTable() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  const next = useCallback(() => {
-    setActive((i) => (i + 1) % COMPETITORS.length);
-  }, []);
+  const next = useCallback(() => setActive((i) => (i + 1) % COMPETITORS.length), []);
+  const prev = useCallback(() => setActive((i) => (i - 1 + COMPETITORS.length) % COMPETITORS.length), []);
 
   useEffect(() => {
     if (paused) return;
-    const timer = setInterval(next, SLIDE_INTERVAL);
-    return () => clearInterval(timer);
+    const t = setInterval(next, SLIDE_MS);
+    return () => clearInterval(t);
   }, [paused, next]);
 
   const competitor = COMPETITORS[active];
+  const total = COMPETITORS.length;
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* heading */}
-        <div className="text-center mb-12">
-          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-3">
-            Competitor comparison
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#3D3D6B]">
-            Why leading D2C brands choose Velocity
-          </h2>
-          <p className="mt-3 text-gray-500 max-w-lg mx-auto">
-            We&apos;re the only platform combining growth capital, shipping, payments, and AI.
-          </p>
-        </div>
-
-        {/* slide tabs */}
-        <div
-          className="flex justify-center gap-3 mb-8"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          {COMPETITORS.map((c, i) => (
+        {/* ── section label ── */}
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <p className="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-2">
+              Competitor comparison
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1A1A2E]">
+              Why leading D2C brands<br className="hidden sm:block" /> choose Velocity
+            </h2>
+          </div>
+          {/* Shiprocket-style slide counter */}
+          <div className="hidden sm:flex items-center gap-3">
             <button
-              key={c.key}
-              onClick={() => setActive(i)}
-              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                active === i
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-                  : "bg-white border border-gray-200 text-gray-500 hover:border-indigo-300 hover:text-indigo-600"
-              }`}
+              onClick={() => { prev(); setPaused(true); }}
+              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
             >
-              {c.name}
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
-          ))}
+            <span className="text-sm font-semibold text-gray-400">
+              <span className="text-[#1A1A2E] text-lg font-extrabold">{active + 1}</span>/{total}
+            </span>
+            <button
+              onClick={() => { next(); setPaused(true); }}
+              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-400 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        {/* auto-progress bar */}
-        <div className="w-full h-0.5 bg-gray-200 rounded-full mb-8 overflow-hidden">
+        {/* ── auto-progress bar ── */}
+        <div className="h-0.5 w-full bg-gray-100 rounded-full mb-8 overflow-hidden">
           {!paused && (
             <div
-              key={active}
+              key={`${active}-bar`}
               className="h-full bg-indigo-500 rounded-full"
-              style={{
-                animation: `slideProgress ${SLIDE_INTERVAL}ms linear forwards`,
-              }}
+              style={{ animation: `growWidth ${SLIDE_MS}ms linear forwards` }}
             />
           )}
         </div>
 
-        {/* slide panel */}
+        {/* ── slide card ── */}
         <div
-          className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
+          key={active}
+          className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+          style={{ animation: "fadeIn 0.35s ease" }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          {/* column headers */}
-          <div className="grid grid-cols-[2fr_1fr_1fr] border-b border-gray-100">
-            <div className="px-6 py-5 text-sm text-gray-400 font-medium">Feature</div>
-            {/* Velocity */}
-            <div className="px-6 py-5 text-center bg-indigo-600">
-              <p className="font-bold text-white text-sm">Velocity</p>
-              <p className="text-indigo-200 text-xs mt-0.5">Growth ecosystem</p>
-              <span className="inline-block mt-2 text-xs font-bold bg-white/20 text-white px-2.5 py-0.5 rounded-full">
-                {VELOCITY_SCORE}/{TOTAL} features
-              </span>
+          {/* card header — two columns */}
+          <div className="grid grid-cols-2">
+            {/* Velocity header */}
+            <div className="px-8 py-6 bg-[#1A1A2E] flex flex-col gap-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">V</span>
+                <span className="text-white font-extrabold text-lg">Velocity</span>
+                <span className="ml-auto text-xs font-bold bg-emerald-500 text-white px-2.5 py-0.5 rounded-full">★ Best</span>
+              </div>
+              <p className="text-indigo-300 text-sm">Finance + Shipping + Payments + AI</p>
+              <p className="text-indigo-200 text-xs font-semibold mt-1">{VELOCITY_SCORE}/{TOTAL} features matched</p>
             </div>
-            {/* competitor */}
-            <div className="px-6 py-5 text-center bg-gray-50">
-              <p className="font-bold text-[#3D3D6B] text-sm">{competitor.name}</p>
-              <p className="text-gray-400 text-xs mt-0.5">{competitor.sub}</p>
-              <span className="inline-block mt-2 text-xs font-semibold bg-gray-200 text-gray-500 px-2.5 py-0.5 rounded-full">
-                {competitor.score}/{TOTAL} features
-              </span>
+            {/* Competitor header */}
+            <div className="px-8 py-6 bg-gray-50 border-l border-gray-100 flex flex-col gap-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-xs font-bold">
+                  {competitor.name[competitor.name.length - 1]}
+                </span>
+                <span className="text-[#1A1A2E] font-extrabold text-lg">{competitor.name}</span>
+              </div>
+              <p className="text-gray-400 text-sm">{competitor.sub}</p>
+              <p className="text-gray-400 text-xs font-semibold mt-1">{competitor.score}/{TOTAL} features matched</p>
             </div>
           </div>
 
-          {/* feature rows */}
+          {/* feature groups */}
           {GROUPS.map((group, gi) => (
             <div key={gi}>
-              <div className="px-6 py-2.5 bg-gray-50 border-y border-gray-100">
-                <span className="text-xs font-bold uppercase tracking-widest text-indigo-500/70">
-                  {group.label}
+              {/* group heading */}
+              <div className="px-8 py-3 bg-gray-50 border-y border-gray-100 flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  {gi + 1}/{GROUPS.length} — {group.label}
                 </span>
               </div>
+              {/* rows */}
               {group.rows.map((row, ri) => {
-                const compCell = row[competitor.key];
+                const comp = row[competitor.key];
                 return (
                   <div
                     key={`${gi}-${ri}`}
-                    className="grid grid-cols-[2fr_1fr_1fr] border-b border-gray-50 hover:bg-gray-50/50 transition-colors last:border-0"
+                    className="grid grid-cols-2 border-b border-gray-50 hover:bg-gray-50/40 transition-colors"
                   >
-                    <div className="px-6 py-4 flex items-center text-sm font-medium text-[#3D3D6B]">
-                      {row.feature}
-                    </div>
-                    {/* Velocity cell */}
-                    <div className="px-4 py-4 flex flex-col items-center justify-center gap-1.5 bg-indigo-50/40 border-x border-indigo-100">
+                    {/* Velocity */}
+                    <div className="px-8 py-4 flex items-center gap-3 border-r border-gray-100">
                       {ICON_MAP[row.velocity.status]}
-                      <span className="text-xs text-indigo-700 font-semibold text-center leading-tight">
-                        {row.velocity.label}
-                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-[#1A1A2E]">{row.feature}</p>
+                        <p className="text-xs text-emerald-600 font-medium">{row.velocity.label}</p>
+                      </div>
                     </div>
-                    {/* competitor cell */}
-                    <div className="px-4 py-4 flex flex-col items-center justify-center gap-1.5">
-                      {ICON_MAP[compCell.status]}
-                      <span className="text-xs text-gray-500 text-center leading-tight">
-                        {compCell.label}
-                      </span>
+                    {/* Competitor */}
+                    <div className="px-8 py-4 flex items-center gap-3">
+                      {ICON_MAP[comp.status]}
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">{row.feature}</p>
+                        <p className="text-xs text-gray-400">{comp.label}</p>
+                      </div>
                     </div>
                   </div>
                 );
@@ -302,53 +301,52 @@ export default function ComparisonTable() {
             </div>
           ))}
 
-          {/* score footer */}
-          <div className="grid grid-cols-[2fr_1fr_1fr] border-t-2 border-gray-100 bg-gray-50">
-            <div className="px-6 py-4 text-sm font-bold text-[#3D3D6B]">Overall score</div>
-            <div className="px-4 py-4 flex items-center justify-center border-x border-indigo-100 bg-indigo-50/40">
-              <span className="bg-indigo-600 text-white text-sm font-bold px-3 py-1.5 rounded-full">
-                {VELOCITY_SCORE}/{TOTAL}
-              </span>
+          {/* card footer */}
+          <div className="grid grid-cols-2 border-t border-gray-200">
+            <div className="px-8 py-5 bg-[#1A1A2E] flex items-center justify-between">
+              <div>
+                <p className="text-indigo-200 text-xs font-medium">Overall score</p>
+                <p className="text-white text-xl font-extrabold">{VELOCITY_SCORE}/{TOTAL}</p>
+              </div>
+              <a
+                href="/financing/apply"
+                className="bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors whitespace-nowrap"
+              >
+                Apply now →
+              </a>
             </div>
-            <div className="px-4 py-4 flex items-center justify-center">
-              <span className="bg-gray-200 text-gray-500 text-sm font-semibold px-3 py-1.5 rounded-full">
-                {competitor.score}/{TOTAL}
-              </span>
+            <div className="px-8 py-5 bg-gray-50 flex items-center">
+              <div>
+                <p className="text-gray-400 text-xs font-medium">Overall score</p>
+                <p className="text-[#1A1A2E] text-xl font-extrabold">{competitor.score}/{TOTAL}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* dot indicators */}
-        <div className="flex justify-center gap-2 mt-6">
+        {/* ── dot indicators (mobile) ── */}
+        <div className="flex sm:hidden justify-center gap-2 mt-6">
           {COMPETITORS.map((_, i) => (
             <button
               key={i}
               onClick={() => { setActive(i); setPaused(true); }}
-              className={`w-2 h-2 rounded-full transition-all ${
-                active === i ? "bg-indigo-600 w-6" : "bg-gray-300"
+              className={`h-2 rounded-full transition-all ${
+                active === i ? "w-6 bg-indigo-600" : "w-2 bg-gray-300"
               }`}
             />
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="mt-10 text-center">
-          <a
-            href="/financing/apply"
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-full transition-colors shadow-lg shadow-indigo-200"
-          >
-            Apply now — term sheet in 2 minutes
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </a>
-        </div>
       </div>
 
       <style>{`
-        @keyframes slideProgress {
-          from { width: 0%; }
-          to   { width: 100%; }
+        @keyframes growWidth {
+          from { width: 0% }
+          to   { width: 100% }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </section>
