@@ -155,10 +155,10 @@ const GROUPS: Group[] = [
 
 type Competitor = { key: CompKey; name: string; sub: string; score: number };
 const COMPETITORS: Competitor[] = [
-  { key: "velocity",   name: "Velocity",   sub: "Growth ecosystem",  score: 15 },
-  { key: "getvantage", name: "GetVantage", sub: "Finance platform",  score: 9  },
-  { key: "klub",       name: "Klub",       sub: "Capital platform",  score: 8  },
-  { key: "recur",      name: "Recur Club", sub: "Finance platform",  score: 8  },
+  { key: "velocity",   name: "Velocity",      sub: "Growth ecosystem",  score: 15 },
+  { key: "getvantage", name: "Competitor A",  sub: "Finance platform",  score: 9  },
+  { key: "klub",       name: "Competitor B",  sub: "Capital platform",  score: 8  },
+  { key: "recur",      name: "Competitor C",  sub: "Finance platform",  score: 8  },
 ];
 
 const TOTAL = 15;
