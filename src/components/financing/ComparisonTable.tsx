@@ -1,259 +1,311 @@
-const CHECK = (
-  <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-  </svg>
+"use client";
+
+import { useState, type ReactElement } from "react";
+
+/* ─── icons ─────────────────────────────────────────────────── */
+const CheckIcon = () => (
+  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+    <svg className="w-3.5 h-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  </span>
+);
+const PartialIcon = () => (
+  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-yellow-100">
+    <svg className="w-3.5 h-3.5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+    </svg>
+  </span>
+);
+const CrossIcon = () => (
+  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+    <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </span>
 );
 
-const PARTIAL = (
-  <svg className="w-5 h-5 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-  </svg>
-);
+/* ─── types ──────────────────────────────────────────────────── */
+type Status = "check" | "partial" | "cross";
+type CompKey = "velocity" | "getvantage" | "klub" | "recur";
+type Cell = { status: Status; label: string };
+type Row = { feature: string } & Record<CompKey, Cell>;
+type Group = { id: string; emoji: string; label: string; rows: Row[] };
 
-const CROSS = (
-  <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
-type CellValue = { icon: "check" | "partial" | "cross"; text: string };
-
-type Row = {
-  feature: string;
-  velocity: CellValue;
-  getvantage: CellValue;
-  klub: CellValue;
-  recur: CellValue;
-};
-
-type Group = { label: string; rows: Row[] };
-
+/* ─── data ───────────────────────────────────────────────────── */
 const GROUPS: Group[] = [
   {
-    label: "Capital & Terms",
+    id: "capital",
+    emoji: "💰",
+    label: "Capital & Pricing",
     rows: [
       {
-        feature: "Funding amount",
-        velocity: { icon: "check", text: "Up to ₹10 Cr" },
-        getvantage: { icon: "partial", text: "Up to ₹20 Cr*" },
-        klub: { icon: "partial", text: "Up to ₹30 Cr" },
-        recur: { icon: "partial", text: "Varies" },
+        feature: "Max funding amount",
+        velocity: { status: "check", label: "₹10 Cr" },
+        getvantage: { status: "partial", label: "₹20 Cr*" },
+        klub: { status: "partial", label: "₹30 Cr" },
+        recur: { status: "partial", label: "Varies" },
       },
       {
         feature: "Funding speed",
-        velocity: { icon: "check", text: "4 days" },
-        getvantage: { icon: "partial", text: "~5 days" },
-        klub: { icon: "partial", text: "48 hrs" },
-        recur: { icon: "partial", text: "48 hrs" },
+        velocity: { status: "check", label: "4 days" },
+        getvantage: { status: "partial", label: "~5 days" },
+        klub: { status: "partial", label: "48 hrs" },
+        recur: { status: "partial", label: "48 hrs" },
       },
       {
         feature: "Pricing transparency",
-        velocity: { icon: "check", text: "5–8% flat fee, public" },
-        getvantage: { icon: "partial", text: "Flat-fee, less clear" },
-        klub: { icon: "partial", text: "Product-dependent" },
-        recur: { icon: "cross", text: "Less prominent" },
-      },
-      {
-        feature: "Repayment flexibility",
-        velocity: { icon: "check", text: "Revenue-based + fixed" },
-        getvantage: { icon: "check", text: "Multiple options" },
-        klub: { icon: "partial", text: "Revenue-linked" },
-        recur: { icon: "partial", text: "Product-dependent" },
+        velocity: { status: "check", label: "5–8% flat, public" },
+        getvantage: { status: "partial", label: "Flat fee, less clear" },
+        klub: { status: "partial", label: "Product-dependent" },
+        recur: { status: "cross", label: "Not prominent" },
       },
       {
         feature: "Term-sheet speed",
-        velocity: { icon: "check", text: "~2 minutes" },
-        getvantage: { icon: "partial", text: "Fast" },
-        klub: { icon: "partial", text: "Fast" },
-        recur: { icon: "partial", text: "Fast" },
+        velocity: { status: "check", label: "~2 minutes" },
+        getvantage: { status: "partial", label: "Fast" },
+        klub: { status: "partial", label: "Fast" },
+        recur: { status: "partial", label: "Fast" },
+      },
+      {
+        feature: "Repayment flexibility",
+        velocity: { status: "check", label: "Revenue + fixed" },
+        getvantage: { status: "check", label: "Multiple options" },
+        klub: { status: "partial", label: "Revenue-linked" },
+        recur: { status: "partial", label: "Product-dependent" },
       },
     ],
   },
   {
+    id: "eligibility",
+    emoji: "✅",
     label: "Eligibility & Process",
     rows: [
       {
         feature: "Equity dilution",
-        velocity: { icon: "check", text: "None" },
-        getvantage: { icon: "check", text: "None" },
-        klub: { icon: "check", text: "None" },
-        recur: { icon: "check", text: "None" },
+        velocity: { status: "check", label: "Zero" },
+        getvantage: { status: "check", label: "None" },
+        klub: { status: "check", label: "None" },
+        recur: { status: "check", label: "None" },
       },
       {
         feature: "Collateral required",
-        velocity: { icon: "check", text: "None" },
-        getvantage: { icon: "partial", text: "No for RBF" },
-        klub: { icon: "partial", text: "No for RBF" },
-        recur: { icon: "check", text: "None" },
+        velocity: { status: "check", label: "None" },
+        getvantage: { status: "partial", label: "No for RBF" },
+        klub: { status: "partial", label: "No for RBF" },
+        recur: { status: "check", label: "None" },
       },
       {
         feature: "Personal guarantee",
-        velocity: { icon: "check", text: "None" },
-        getvantage: { icon: "partial", text: "No for RBF" },
-        klub: { icon: "partial", text: "No for RBF" },
-        recur: { icon: "check", text: "None" },
+        velocity: { status: "check", label: "None" },
+        getvantage: { status: "partial", label: "No for RBF" },
+        klub: { status: "partial", label: "No for RBF" },
+        recur: { status: "check", label: "None" },
       },
       {
-        feature: "No pitch deck",
-        velocity: { icon: "check", text: "Data-driven only" },
-        getvantage: { icon: "partial", text: "Digital process" },
-        klub: { icon: "check", text: "No pitch deck" },
-        recur: { icon: "partial", text: "Digital" },
+        feature: "Pitch deck required",
+        velocity: { status: "check", label: "No — data only" },
+        getvantage: { status: "partial", label: "Digital process" },
+        klub: { status: "check", label: "Not required" },
+        recur: { status: "partial", label: "Digital" },
       },
       {
-        feature: "D2C-specific underwriting",
-        velocity: { icon: "check", text: "eCommerce-native" },
-        getvantage: { icon: "partial", text: "Broad digital" },
-        klub: { icon: "partial", text: "Broad" },
-        recur: { icon: "partial", text: "Broad" },
+        feature: "NBFC / RBI regulated",
+        velocity: { status: "check", label: "RBI-backed NBFC" },
+        getvantage: { status: "partial", label: "Varies" },
+        klub: { status: "partial", label: "Varies" },
+        recur: { status: "partial", label: "Varies" },
       },
     ],
   },
   {
+    id: "ecosystem",
+    emoji: "🚀",
     label: "Ecosystem & Growth",
     rows: [
       {
-        feature: "Integrated ecosystem",
-        velocity: { icon: "check", text: "Finance + Shipping + Payments + AI + Insights" },
-        getvantage: { icon: "cross", text: "Finance only" },
-        klub: { icon: "cross", text: "Finance only" },
-        recur: { icon: "cross", text: "Finance only" },
+        feature: "Integrated shipping",
+        velocity: { status: "check", label: "ShipFast built-in" },
+        getvantage: { status: "cross", label: "Not available" },
+        klub: { status: "cross", label: "Not available" },
+        recur: { status: "cross", label: "Not available" },
       },
       {
-        feature: "Shipping integration",
-        velocity: { icon: "check", text: "ShipFast built-in" },
-        getvantage: { icon: "cross", text: "Not available" },
-        klub: { icon: "cross", text: "Not available" },
-        recur: { icon: "cross", text: "Not available" },
+        feature: "Payments platform",
+        velocity: { status: "check", label: "Velocity Payments" },
+        getvantage: { status: "cross", label: "Not available" },
+        klub: { status: "cross", label: "Not available" },
+        recur: { status: "cross", label: "Not available" },
       },
       {
-        feature: "AI-powered insights",
-        velocity: { icon: "check", text: "Vani AI + Insights" },
-        getvantage: { icon: "cross", text: "Limited" },
-        klub: { icon: "cross", text: "Limited" },
-        recur: { icon: "cross", text: "Limited" },
+        feature: "AI & insights",
+        velocity: { status: "check", label: "Vani AI + Insights" },
+        getvantage: { status: "cross", label: "Limited" },
+        klub: { status: "cross", label: "Limited" },
+        recur: { status: "cross", label: "Limited" },
       },
       {
         feature: "D2C brand network",
-        velocity: { icon: "check", text: "4,000+ brands" },
-        getvantage: { icon: "partial", text: "Strong" },
-        klub: { icon: "partial", text: "Strong" },
-        recur: { icon: "partial", text: "Strong" },
+        velocity: { status: "check", label: "4,000+ brands" },
+        getvantage: { status: "partial", label: "Strong" },
+        klub: { status: "partial", label: "Strong" },
+        recur: { status: "partial", label: "Strong" },
       },
       {
         feature: "Repeat funding",
-        velocity: { icon: "check", text: "Scales with revenue" },
-        getvantage: { icon: "check", text: "Yes" },
-        klub: { icon: "check", text: "Yes" },
-        recur: { icon: "check", text: "Yes" },
+        velocity: { status: "check", label: "Scales with revenue" },
+        getvantage: { status: "check", label: "Yes" },
+        klub: { status: "check", label: "Yes" },
+        recur: { status: "check", label: "Yes" },
       },
     ],
   },
 ];
 
-const ICON_MAP = { check: CHECK, partial: PARTIAL, cross: CROSS };
-
-const COMPETITORS = [
-  {
-    key: "velocity" as const,
-    name: "Velocity",
-    tag: "Best overall",
-    highlight: true,
-    tagColor: "bg-green-100 text-green-700",
-  },
-  {
-    key: "getvantage" as const,
-    name: "GetVantage",
-    tag: "Finance-focused",
-    highlight: false,
-    tagColor: "bg-gray-100 text-gray-500",
-  },
-  {
-    key: "klub" as const,
-    name: "Klub",
-    tag: "Capital platform",
-    highlight: false,
-    tagColor: "bg-gray-100 text-gray-500",
-  },
-  {
-    key: "recur" as const,
-    name: "Recur Club",
-    tag: "Financing platform",
-    highlight: false,
-    tagColor: "bg-gray-100 text-gray-500",
-  },
+const COMPETITORS: { key: CompKey; name: string; subtitle: string; score: number; total: number }[] = [
+  { key: "velocity",   name: "Velocity",    subtitle: "Finance + Shipping + AI", score: 15, total: 15 },
+  { key: "getvantage", name: "GetVantage",  subtitle: "Finance platform",        score: 9,  total: 15 },
+  { key: "klub",       name: "Klub",        subtitle: "Capital platform",         score: 8,  total: 15 },
+  { key: "recur",      name: "Recur Club",  subtitle: "Financing platform",       score: 8,  total: 15 },
 ];
 
+const ICON_MAP: Record<Status, ReactElement> = {
+  check:   <CheckIcon />,
+  partial: <PartialIcon />,
+  cross:   <CrossIcon />,
+};
+
+/* ─── component ─────────────────────────────────────────────── */
 export default function ComparisonTable() {
+  const [activeGroup, setActiveGroup] = useState("all");
+
+  const visibleGroups =
+    activeGroup === "all" ? GROUPS : GROUPS.filter((g) => g.id === activeGroup);
+
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* heading */}
-        <div className="text-center mb-14">
+
+        {/* ── heading ── */}
+        <div className="text-center mb-12">
           <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest mb-3">
             Competitor comparison
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#3D3D6B]">
             Why founders choose Velocity
           </h2>
-          <p className="mt-4 text-lg text-gray-500 max-w-xl mx-auto">
-            We&apos;re not just a lender — we&apos;re a growth platform. See how Velocity stacks up.
+          <p className="mt-3 text-lg text-gray-500 max-w-xl mx-auto">
+            We&apos;re not just a lender — we&apos;re your growth platform.
           </p>
         </div>
 
-        {/* table */}
-        <div className="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
-          <table className="w-full text-sm min-w-[700px]">
-            {/* column headers */}
+        {/* ── score cards ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+          {COMPETITORS.map((c) => {
+            const pct = Math.round((c.score / c.total) * 100);
+            const isVelocity = c.key === "velocity";
+            return (
+              <div
+                key={c.key}
+                className={`rounded-2xl p-5 text-center ${
+                  isVelocity
+                    ? "bg-[#3D3D6B] text-white shadow-xl shadow-indigo-200"
+                    : "bg-white text-gray-700 border border-gray-200"
+                }`}
+              >
+                <p className={`text-xs font-semibold mb-1 ${isVelocity ? "text-indigo-200" : "text-gray-400"}`}>
+                  {c.subtitle}
+                </p>
+                <p className={`text-xl font-bold mb-3 ${isVelocity ? "text-white" : "text-[#3D3D6B]"}`}>
+                  {c.name}
+                </p>
+                <div className={`h-1.5 rounded-full mb-2 ${isVelocity ? "bg-white/20" : "bg-gray-100"}`}>
+                  <div
+                    className={`h-full rounded-full ${isVelocity ? "bg-green-400" : "bg-gray-300"}`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <p className={`text-xs font-medium ${isVelocity ? "text-indigo-200" : "text-gray-400"}`}>
+                  {c.score}/{c.total} features
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── category filter tabs ── */}
+        <div className="flex flex-wrap gap-2 justify-center mb-8">
+          {[{ id: "all", emoji: "📋", label: "All features" }, ...GROUPS].map((g) => (
+            <button
+              key={g.id}
+              onClick={() => setActiveGroup(g.id)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeGroup === g.id
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300 hover:text-indigo-600"
+              }`}
+            >
+              <span>{g.emoji}</span>
+              {g.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── table ── */}
+        <div className="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
+          <table className="w-full text-sm min-w-[680px]">
             <thead>
-              <tr>
-                <th className="px-6 py-5 bg-gray-50 text-left text-gray-500 font-medium w-1/4 border-b border-gray-200">
+              <tr className="border-b border-gray-200">
+                <th className="px-6 py-5 text-left text-gray-500 font-medium w-[30%]">
                   Feature
                 </th>
                 {COMPETITORS.map((c) => (
                   <th
                     key={c.key}
-                    className={`px-6 py-5 text-center border-b ${
-                      c.highlight
-                        ? "bg-indigo-600 text-white border-indigo-700"
-                        : "bg-gray-50 text-gray-700 border-gray-200"
+                    className={`px-4 py-5 text-center w-[17.5%] ${
+                      c.key === "velocity"
+                        ? "bg-gradient-to-b from-indigo-600 to-indigo-700 text-white"
+                        : "text-gray-600 bg-gray-50"
                     }`}
                   >
-                    <div className="flex flex-col items-center gap-1.5">
-                      <span className="font-bold text-base">{c.name}</span>
-                      <span
-                        className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                          c.highlight
-                            ? "bg-white/20 text-white"
-                            : c.tagColor
-                        }`}
-                      >
-                        {c.tag}
+                    <div className="flex flex-col items-center gap-1">
+                      {c.key === "velocity" && (
+                        <span className="inline-flex items-center gap-1 bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                          Best overall
+                        </span>
+                      )}
+                      <span className={`font-bold text-sm ${c.key === "velocity" ? "text-white" : "text-[#3D3D6B]"}`}>
+                        {c.name}
+                      </span>
+                      <span className={`text-xs ${c.key === "velocity" ? "text-indigo-200" : "text-gray-400"}`}>
+                        {c.subtitle}
                       </span>
                     </div>
                   </th>
                 ))}
               </tr>
             </thead>
-
             <tbody>
-              {GROUPS.map((group, gi) => (
+              {visibleGroups.map((group, gi) => (
                 <>
-                  {/* group label row */}
-                  <tr key={`group-${gi}`}>
+                  <tr key={`g-${gi}`}>
                     <td
                       colSpan={5}
-                      className="px-6 py-3 bg-gray-50 text-xs font-bold text-gray-400 uppercase tracking-widest border-y border-gray-200"
+                      className="px-6 py-3 bg-gray-50 border-y border-gray-100"
                     >
-                      {group.label}
+                      <span className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                        <span className="text-base">{group.emoji}</span>
+                        {group.label}
+                      </span>
                     </td>
                   </tr>
-
-                  {/* feature rows */}
                   {group.rows.map((row, ri) => (
                     <tr
                       key={`${gi}-${ri}`}
-                      className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
+                      className="border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors"
                     >
                       <td className="px-6 py-4 font-medium text-[#3D3D6B]">
                         {row.feature}
@@ -263,20 +315,22 @@ export default function ComparisonTable() {
                         return (
                           <td
                             key={c.key}
-                            className={`px-6 py-4 text-center ${
-                              c.highlight ? "bg-indigo-50" : ""
+                            className={`px-4 py-4 text-center ${
+                              c.key === "velocity"
+                                ? "bg-indigo-50/60 border-x border-indigo-100"
+                                : ""
                             }`}
                           >
-                            <div className="flex flex-col items-center gap-1">
-                              {ICON_MAP[cell.icon]}
+                            <div className="flex flex-col items-center gap-1.5">
+                              {ICON_MAP[cell.status]}
                               <span
                                 className={`text-xs leading-tight ${
-                                  c.highlight
-                                    ? "text-indigo-700 font-medium"
+                                  c.key === "velocity"
+                                    ? "text-indigo-700 font-semibold"
                                     : "text-gray-500"
                                 }`}
                               >
-                                {cell.text}
+                                {cell.label}
                               </span>
                             </div>
                           </td>
@@ -287,24 +341,51 @@ export default function ComparisonTable() {
                 </>
               ))}
             </tbody>
+
+            {/* summary footer row */}
+            <tfoot>
+              <tr className="border-t-2 border-gray-200 bg-gray-50">
+                <td className="px-6 py-4 font-bold text-[#3D3D6B] text-sm">
+                  Overall score
+                </td>
+                {COMPETITORS.map((c) => (
+                  <td
+                    key={c.key}
+                    className={`px-4 py-4 text-center ${
+                      c.key === "velocity" ? "bg-indigo-50 border-x border-indigo-100" : ""
+                    }`}
+                  >
+                    <span
+                      className={`inline-flex items-center justify-center font-bold text-sm px-3 py-1.5 rounded-full ${
+                        c.key === "velocity"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      {c.score}/{c.total}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
           </table>
         </div>
 
-        {/* CTA below table */}
-        <div className="mt-10 text-center">
+        {/* ── bottom CTA ── */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="/financing/apply"
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3.5 rounded-full transition-colors shadow-lg shadow-indigo-200"
+            className="w-full sm:w-auto text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3.5 rounded-full transition-colors shadow-lg shadow-indigo-200"
           >
-            Apply now — get a term sheet in 2 minutes
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+            Apply now — get a term sheet in 2 minutes →
           </a>
-          <p className="mt-3 text-sm text-gray-400">
-            No equity dilution · No collateral · No personal guarantee
-          </p>
+          <div className="flex items-center gap-6 text-sm text-gray-400">
+            <span className="flex items-center gap-1.5"><CheckIcon /> No equity</span>
+            <span className="flex items-center gap-1.5"><CheckIcon /> No collateral</span>
+            <span className="flex items-center gap-1.5"><CheckIcon /> No guarantee</span>
+          </div>
         </div>
+
       </div>
     </section>
   );
